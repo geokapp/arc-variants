@@ -153,7 +153,8 @@ arc-variants is available under the terms of the GPL-3.0. See `COPYING` for deta
 
 ## Full Preview
 
-![A full screenshot of the Arc Red light variant](http://imgur.com/t7V3P1M)
+![A full screenshot of the Arc Red light variant](http://i.imgur.com/t7V3P1M.png)
 
-![A full screenshot of the Arc Red darker variant](http://imgur.com/BGLiWLf)
-<sub>Screenshot Details: Icons: [Vibrancy-Colors](http://www.ravefinity.com/p/vibrancy-colors-gtk-icon-theme.html) | [Wallpaper](http://imgur.com/dc8cIit) | XFCE 4.12 </sub>
+![A full screenshot of the Arc Red darker variant](http://i.imgur.com/BGLiWLf.png)
+
+<sub>Screenshot Details: Icons: [Vibrancy-Colors](http://www.ravefinity.com/p/vibrancy-colors-gtk-icon-theme.html) | [Wallpaper](http://i.imgur.com/dc8cIit.jpg) | XFCE 4.12 </sub>
