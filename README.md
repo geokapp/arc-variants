@@ -151,3 +151,9 @@ If you find a bug, please report it at https://github.com/geokapp/arc-theme/issu
 arc-variants is available under the terms of the GPL-3.0. See `COPYING` for details.
 
 
+## Full Preview
+
+![A full screenshot of the Arc Red light variant](http://imgur.com/t7V3P1M)
+
+![A full screenshot of the Arc Red darker variant](http://imgur.com/BGLiWLf)
+<sub>Screenshot Details: Icons: [Vibrancy-Colors](http://www.ravefinity.com/p/vibrancy-colors-gtk-icon-theme.html) | [Wallpaper](http://imgur.com/dc8cIit) | XFCE 4.12 </sub>
