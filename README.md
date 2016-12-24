@@ -1,6 +1,6 @@
 # arc-variants
 
-arc-variants is a tool that generates new color variants of the [Arc theme](https://raw.githubusercontent.com/horst3180/arc-theme). In addition to the new color variants, arc-variants can generate their respective high DPI versions. Currently, the following environments are supported: GTK2, GTK3 (up to 3.22), Gnome Shell, xfwm4, and Cinnamon.
+arc-variants is a tool that generates new color variants of the [Arc theme](https://github.com/horst3180/arc-theme). In addition to the new color variants, arc-variants can generate their respective high DPI versions. Currently, the following environments are supported: GTK2, GTK3 (up to 3.22), Gnome Shell, xfwm4, and Cinnamon.
 
 ## Custom elements
 
