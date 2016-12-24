@@ -120,8 +120,9 @@ You can use the `-u, --uninstall` flag to uninstall a variant. E.g.:
 
 ### 4. Other Options
 
-Other options to pass to arc-variants are
+Other options to pass to arc-variants are:
 
+    -p, --dpi       Set a custom DPI value for the high DPI variants. The default is 140. 
     -o, --original  Preserve the original assets of the vanilla Arc theme.
     -c, --clear     Delete all the generated folder inside the tool's folder.
     -h, --help      Print a help message.

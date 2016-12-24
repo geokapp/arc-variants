@@ -6,6 +6,7 @@ OPTIPNG="/usr/bin/optipng"
 SRC_FILE="$1.svg"
 ASSETS_DIR=$2
 INDEX=$3
+DPI=$4
 
 for i in `cat $INDEX`
 do 
@@ -16,7 +17,7 @@ else
     echo Rendering $ASSETS_DIR/$i.png
     $INKSCAPE --export-id=$i \
               --export-id-only \
-	      --export-dpi=140 \
+	      --export-dpi=$DPI \
               --export-png=$ASSETS_DIR/$i.png $SRC_FILE >/dev/null \
     && $OPTIPNG -o7 --quiet $ASSETS_DIR/$i.png 
 fi

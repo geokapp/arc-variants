@@ -39,6 +39,7 @@ gtk3_versions="14 16 18 20 22" ;
 variant=-1 ;
 operation="" ;
 original=0 ;
+dpi=140 ;
 
 # The size of the variant names array minus 1.
 vsize=7 ;
@@ -105,6 +106,8 @@ print_help()
     echo '  -v, --gtk3-version=VER: Set the gtk3 versions. The supported versions are: 14,' ;
     echo '                          16, 18, 20, 22. E.g., -v="18 20 22". The default is to' ;
     echo '                          build the theme for all versions.' ;
+    echo '  -p, --dpi               Set a custom DPI value for the high DPI variants. The' ;
+    echo '                          default is 140.' ;
     echo '  -d, --disable-dark:     Disable al lthe dark variants.' ;
     echo '  -o, --original:         Use the original assets of the Arc theme.' ;
     echo '  -c, --clear:            Delete all the generated content.' ;
@@ -233,7 +236,7 @@ render_assets()
     if [ $1 -eq 0 ]; then
 	./internal/xfwm4-render-assets.sh $xfwm4_dir/assets-$param $xfwm4_dir/assets $xfwm4_dir/assets.txt ;
     else
-	./internal/xfwm4-hidpi-render-assets.sh $xfwm4_dir/assets-$param $xfwm4_dir/assets $xfwm4_dir/assets.txt ;
+	./internal/xfwm4-hidpi-render-assets.sh $xfwm4_dir/assets-$param $xfwm4_dir/assets $xfwm4_dir/assets.txt $dpi ;
     fi ;
     cp -rf $xfwm4_dir/assets $arc_dir/common/xfwm4/. ;
     cp -rf $xfwm4_dir/assets-dark $arc_dir/common/xfwm4/. ;
@@ -247,7 +250,7 @@ render_assets()
     if [ $1 -eq 0 ]; then
 	./internal/gtk2-render-assets.sh $gtk2_dir/assets-$param $gtk2_dir/assets $gtk2_dir/assets.txt ;
     else
-	./internal/gtk2-hidpi-render-assets.sh $gtk2_dir/assets-$param $gtk2_dir/assets $gtk2_dir/assets.txt ;
+	./internal/gtk2-hidpi-render-assets.sh $gtk2_dir/assets-$param $gtk2_dir/assets $gtk2_dir/assets.txt $dpi ;
     fi ;
     cp -rf $gtk2_dir/assets $arc_dir/common/gtk-2.0/. ;
     cp -rf $gtk2_dir/assets-dark $arc_dir/common/gtk-2.0/. ;
@@ -261,7 +264,7 @@ render_assets()
 	if [ $1 -eq 0 ]; then
 	    ./internal/gtk3-render-assets.sh $gtk3_dir/$i/assets-$param $gtk3_dir/$i/assets $gtk3_dir/$i/assets.txt ;
 	else
-	    ./internal/gtk3-hidpi-render-assets.sh $gtk3_dir/$i/assets-$param $gtk3_dir/$i/assets $gtk3_dir/$i/assets.txt ;
+	    ./internal/gtk3-hidpi-render-assets.sh $gtk3_dir/$i/assets-$param $gtk3_dir/$i/assets $gtk3_dir/$i/assets.txt $dpi ;
 	fi ;
 	cp -rf $gtk3_dir/$i/assets $arc_dir/common/gtk-3.0/3.$i/. ;
 	echo "Done." ;
@@ -548,11 +551,21 @@ for i in "$@"; do
 	    shift ;
 	    ;;
 	-v=*|--gtk3-versions=*)
-	    param="${i#*=}" ;
+ 	    param="${i#*=}" ;
 	    if [ "$param" != "" ]; then
 		gtk3_versions="$param" ;
 	    else
 		echo "Error: -g, --gtk3-versions requires a parameter." ;
+		exit 1 ;
+	    fi ;
+	    shift ;
+	    ;;
+	-p=*|--dpi=*)
+ 	    param="${i#*=}" ;
+	    if [ "$param" != "" ]; then
+		dpi=$param ;
+	    else
+		echo "Error: -p, --dpi requires a parameter." ;
 		exit 1 ;
 	    fi ;
 	    shift ;
