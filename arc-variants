@@ -1,0 +1,586 @@
+#!/bin/bash
+#
+# arc-variants - Generate new color variations of the Arc theme.
+#
+# Copyright (c) 2016 - Giorgos Kappes <geokapp@gmail.com>
+#
+# This is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License version 3.0, as published by the Free Software
+# Foundation.  See file COPYING.
+#
+# This script generates new color variations of the Arc theme,
+# as well as their  respective high DPI versions. You can find
+# the original Arc theme here:
+# https://github.com/horst3180/arc-theme
+#
+# Currently, the following environments are supported:
+# * xfwm4
+# * gtk2
+# * gtk3 Versions: 14, 16, 28, 20, 22
+# * cinnamon
+# * gnome-shell
+#
+# Last updated: 24-12-2016
+#
+
+prefix="/usr" ;
+arc_options="--disable-transparency --disable-unity --disable-metacity --prefix=$prefix" ;
+deps_deb="sed autoconf automake pkg-config git inkscape optipng" ;
+deps_rpm="sed autoconf automake pkgconfig git inkscape optipng" ;
+deps=$deps_deb ;
+workdir=$(pwd) ;
+gtk2_dir=$workdir/internal/gtk2 ;
+gtk3_dir=$workdir/internal/gtk3 ;
+xfwm4_dir=$workdir/internal/xfwm4 ;
+arc_dir=$workdir/arc-theme ;
+arc_git="https://github.com/horst3180/arc-theme" ;
+gtk3_versions="14 16 18 20 22" ;
+variant=-1 ;
+operation="" ;
+original=0 ;
+
+# The size of the variant names array minus 1.
+vsize=7 ;
+
+# The size of the color array minus 1.
+csize=17 ;
+
+# The color names.
+variants=("blue" "blue-hidpi" "red" "red-hidpi" "green" "green-hidpi" "brown" "brown-hidpi") ;
+
+# Blue (The base color).
+colors0=("5294[Ee]2"    "353945"       "2[Bb]2[Ee]37" "5[Cc]616[Cc]" "404552"       "3[Ff]4453" \
+			"2[Ff]343[Ff]" "383[Cc]4[Aa]" "505666"       "3[Ee]4350"    "3[Ee]434[Ff]" \
+			"3[Ee]4351"    "2[Ee]3340"    "444[Aa]58"    "393[Ff]4[Cc]" "363[Bb]48" \
+			"313541"       "39404[Dd]") ;
+colors1=("5294[Ee]2"    "353945"       "2[Bb]2[Ee]37" "5[Cc]616[Cc]" "404552"       "3[Ff]4453" \
+			"2[Ff]343[Ff]" "383[Cc]4[Aa]" "505666"       "3[Ee]4350"    "3[Ee]434[Ff]" \
+			"3[Ee]4351"    "2[Ee]3340"    "444[Aa]58"    "393[Ff]4[Cc]" "363[Bb]48" \
+			"313541"       "39404[Dd]") ;
+
+# Red.
+colors2=("e25252" "3d3d3d" "313131" "626262" "484848" "494949" "393939" "424242" "5f5f5f" \
+		  "494949" "454545" "4a4a4a" "373737" "555555" "444444" "414141" "3d3d3d" \
+		  "484848");
+colors3=("e25252" "3d3d3d" "313131" "626262" "484848" "494949" "393939" "424242" "5f5f5f" \
+		  "494949" "454545" "4a4a4a" "373737" "555555" "444444" "414141" "3d3d3d" \
+		  "484848");
+
+# Green.
+colors4=("4DBF90" "35453E" "2B3732" "5C6C65" "40524A" "3F534A" "2F3F38" "384A43" "50665D" \
+		  "3E5049" "3E4F48" "3E5149" "2E4039" "445850" "394C44" "364841" "31413A" \
+		  "394d45") ;
+colors5=("4DBF90" "35453E" "2B3732" "5C6C65" "40524A" "3F534A" "2F3F38" "384A43" "50665D" \
+		  "3E5049" "3E4F48" "3E5149" "2E4039" "445850" "394C44" "364841" "31413A" \
+		  "394d45") ;
+ 
+# Brown.
+colors6=("BF824D" "453C35" "37312B" "6C635C" "524840" "53483F" "3F362F" "4A4038" "665A50" \
+		  "50463E" "4F463E" "51473E" "40362E" "584D44" "4C4239" "483E36" "413831" \
+		  "4d4239") ;
+colors7=("BF824D" "453C35" "37312B" "6C635C" "524840" "53483F" "3F362F" "4A4038" "665A50" \
+		  "50463E" "4F463E" "51473E" "40362E" "584D44" "4C4239" "483E36" "413831" \
+		  "4d4239");
+
+#
+# print_help - Prints a help message.
+#
+print_help()
+{
+    echo 'Usage: ./arc-variants [options]' ;
+    echo 'Options:' ;
+    echo '  -i, --install=VAR:      Install the variant VAR. The supported variants are:' ;
+    echo -n '                          ' ;
+    for j in $(seq 0 1 $vsize); do
+	echo -n "${variants[$j]}," ;
+    done ;
+    echo -e '\b.' ;
+    echo '  -u, --uninstall=VAR:    Uninstall the variant VAR. The supported variants are:' ;
+    echo -n '                          ' ;
+    for j in $(seq 0 1 $vsize); do
+	echo -n "${variants[$j]}," ;
+    done ;
+    echo -e '\b.' ;
+    echo '  -v, --gtk3-version=VER: Set the gtk3 versions. The supported versions are: 14,' ;
+    echo '                          16, 18, 20, 22. E.g., -v="18 20 22". The default is to' ;
+    echo '                          build the theme for all versions.' ;
+    echo '  -d, --disable-dark:     Disable al lthe dark variants.' ;
+    echo '  -o, --original:         Use the original assets of the Arc theme.' ;
+    echo '  -c, --clear:            Delete all the generated content.' ;
+    echo '  -h, --help:             Print this help message.' ;
+}
+
+#
+# check_dependencies - Checks if the required packages are installed.
+# 
+check_dependencies()
+{
+    fail=0 ;
+    echo "Checking dependencies..." ;
+    if ! hash "apt" 2> /dev/null; then
+	deps=$deps_rpm ;
+    fi ;
+    for i in $deps; do	
+	echo -n "Checking $i..." ;
+	if hash $i 2> /dev/null; then
+	    echo "ok" ;
+	else
+	    echo "failed." ;
+	    fail=1 ;
+	fi ;
+    done ;
+    if [ $fail -eq 1 ]; then
+	echo "Install the missing dependencies and try again." ;
+	exit 1 ;
+    fi ;
+}
+
+#
+# init - Performs the required initialization steps.
+#
+init()
+{
+    # To load nvm.
+    source ~/.bashrc ;
+
+    # Clear any previous builds.
+    clear ;
+    
+    # Check dependencies.
+    check_dependencies ;
+
+    # fix permissions.
+    chmod +x $workdir/internal/*.sh ;
+
+    # Prepare the original Arc theme.
+    prepare_arc ;
+}
+
+#
+# clear - Clears the generated content.
+#
+clear()
+{
+    echo "Cleaning..." ;
+    rm -rf $arc_dir ;
+    rm -rf $xfwm4_dir/assets/* ;
+    rm -rf $xfwm4_dir/assets-dark/* ;
+    rm -rf $gtk2_dir/assets/* ;
+    rm -rf $gtk2_dir/assets-dark/* ;
+    rm -rf $gtk2_dir/menubar-toolbar/* ;
+    for i in $gtk3_versions; do
+	rm -rf $gtk3_dir/$i/assets/* ;
+    done ;
+    echo "Done." ;
+}
+
+#
+# prepare_arc - Downloads the last version of the Arc theme and prepares
+#               the node-sass environment.
+#
+prepare_arc()
+{
+    cd $workdir ;
+
+    # Clone the original Arc theme.
+    echo "Cloning Arc-theme..." ;
+    git clone $arc_git --depth 1 ;
+    if [ -d "arc-theme" ]; then
+	cd arc-theme ;
+    else
+	echo "Error: Cannot clone the original arc-theme." ;
+	exit 1 ;
+    fi ;
+    echo "Done." ;
+
+    # Prepare the node-sass environment.
+    echo "Preparing node-sass..."
+    cd common ;    
+    if nvm i ; then
+	if npm i ; then
+	    if npm i -g gulp ; then
+		echo "Done." ;
+	    else
+		echo "Error: Node-sass preparation failed." ;
+		exit 1 ;
+	    fi ;
+	else
+	    echo "Error: Node-sass preparation failed." ;
+	    exit 1 ;
+	fi ;
+    else
+	echo "Error: Node-sass preparation failed." ;
+	exit 1 ;
+    fi ;
+}
+
+#
+# render_assets - Renders the asset images.
+# $1: The hidpi flag (0 for normal, 1 for hidpi).
+# $2: The variant name.
+#
+render_assets()
+{
+    cd $workdir ;
+    # Strip the hidpi suffix if it exists.
+    param=${2%-hidpi}
+
+    # Render xfwm4 assets.
+    echo "Rendering xfwm4 assets..." ;
+    rm -rf $xfwm4_dir/assets/* ;
+    rm -rf $xfwm4_dir/assets-dark/* ;
+    if [ $1 -eq 0 ]; then
+	./internal/xfwm4-render-assets.sh $xfwm4_dir/assets-$param $xfwm4_dir/assets $xfwm4_dir/assets.txt ;
+    else
+	./internal/xfwm4-hidpi-render-assets.sh $xfwm4_dir/assets-$param $xfwm4_dir/assets $xfwm4_dir/assets.txt ;
+    fi ;
+    cp -rf $xfwm4_dir/assets $arc_dir/common/xfwm4/. ;
+    cp -rf $xfwm4_dir/assets-dark $arc_dir/common/xfwm4/. ;
+    
+    echo "Done." ;
+
+    # Render gtk2 assets.
+    echo "Rendering gtk2 assets..."
+    rm -rf $gtk2_dir/assets/* ;
+    rm -rf $gtk2_dir/assets-dark/* ;
+    if [ $1 -eq 0 ]; then
+	./internal/gtk2-render-assets.sh $gtk2_dir/assets-$param $gtk2_dir/assets $gtk2_dir/assets.txt ;
+    else
+	./internal/gtk2-hidpi-render-assets.sh $gtk2_dir/assets-$param $gtk2_dir/assets $gtk2_dir/assets.txt ;
+    fi ;
+    cp -rf $gtk2_dir/assets $arc_dir/common/gtk-2.0/. ;
+    cp -rf $gtk2_dir/assets-dark $arc_dir/common/gtk-2.0/. ;
+    cp -rf $gtk2_dir/menubar-toolbar $arc_dir/common/gtk-2.0/.
+    echo "Done." ;
+
+    # Render gtk3 assets.
+    for i in $gtk3_versions; do
+	echo "Rendering gtk3.$i assets..." ;
+	rm -rf $gtk3_dir/$i/assets/*
+	if [ $1 -eq 0 ]; then
+	    ./internal/gtk3-render-assets.sh $gtk3_dir/$i/assets-$param $gtk3_dir/$i/assets $gtk3_dir/$i/assets.txt ;
+	else
+	    ./internal/gtk3-hidpi-render-assets.sh $gtk3_dir/$i/assets-$param $gtk3_dir/$i/assets $gtk3_dir/$i/assets.txt ;
+	fi ;
+	cp -rf $gtk3_dir/$i/assets $arc_dir/common/gtk-3.0/3.$i/. ;
+	echo "Done." ;
+    done ;
+}
+
+#
+# change_common - Performs some common changes to the original Arc theme.
+#
+change_common()
+{
+    cd $workdir ;
+    
+    # Change color e7e8eb to f5f6f7.
+    # xfwm4.
+    sed -i 's/[Ee]7[Ee]8[Ee][Bb]/f5f6f7/g' $arc_dir/common/xfwm4/themerc ;
+    sed -i 's/[Ee]7[Ee]8[Ee][Bb]/f5f6f7/g' $xfwm4_dir/assets-blue.svg ;
+    
+    # gtk2.
+    sed -i 's/[Ee]7[Ee]8[Ee][Bb]/f5f6f7/g' $gtk2_dir/assets-blue.svg ;
+    files=$(find $arc_dir/common/gtk-2.0/ -type f ! -name "*.png") ;
+    for i in $files; do
+	sed -i 's/[Ee]7[Ee]8[Ee][Bb]/f5f6f7/g' $i ;
+    done ;
+
+    # Change the backround of the workspace switcher.
+    sed -i 's/style "workspace-switcher" = "theme-panel" {/style "workspace-switcher" = \
+"theme-panel" {\nbg[NORMAL] = "#666666"\nbg[PRELIGHT] = "#999999"\n/g' $arc_dir/common/gtk-2.0/panel.rc
+    
+    # gtk3.
+    for i in $gtk3_versions; do
+	sed -i 's/[Ee]7[Ee]8[Ee][Bb]/f5f6f7/g' $gtk3_dir/$i/assets-blue.svg ;
+	sed -i 's/[Ee]7[Ee]8[Ee][Bb]/f5f6f7/g' $arc_dir/common/gtk-3.0/3.$i/sass/_colors.scss ;
+    done ;
+}
+
+#
+# change_color - Changes the theme's color to a new variant.
+# $1: The variant name.
+#
+change_color()
+{
+    cd $workdir ;
+    param=${1%-hidpi}
+    
+    echo "Changing theme to $1 variant..." ;
+    
+    # xfwm4.
+    cp $xfwm4_dir/assets-blue.svg $xfwm4_dir/assets-$param.svg ;
+    cp $xfwm4_dir/assets-blue-dark.svg $xfwm4_dir/assets-$param-dark.svg ;
+    
+    # Change title buttons.
+    if [ "$param" == "red" ]; then
+	for j in "red" "red-dark"; do
+	    sed -i 's/shade-prelight/shade-tmp/g' $xfwm4_dir/assets-$j.svg ;
+	    sed -i 's/shade-pressed/shade-prelight/g' $xfwm4_dir/assets-$j.svg ;
+	    sed -i 's/shade-tmp/shade-pressed/g' $xfwm4_dir/assets-$j.svg ;
+	    sed -i 's/stick-prelight/stick-tmp/g' $xfwm4_dir/assets-$j.svg ;
+	    sed -i 's/stick-pressed/stick-prelight/g' $xfwm4_dir/assets-$j.svg ;
+	    sed -i 's/stick-tmp/stick-pressed/g' $xfwm4_dir/assets-$j.svg ;
+	    sed -i 's/hide-prelight/hide-tmp/g' $xfwm4_dir/assets-$j.svg ;
+	    sed -i 's/hide-pressed/hide-prelight/g' $xfwm4_dir/assets-$j.svg ;
+	    sed -i 's/hide-tmp/hide-pressed/g' $xfwm4_dir/assets-$j.svg ;
+	    sed -i 's/close-prelight/close-tmp/g' $xfwm4_dir/assets-$j.svg ;
+	    sed -i 's/close-pressed/close-prelight/g' $xfwm4_dir/assets-$j.svg ;
+	    sed -i 's/close-tmp/close-pressed/g' $xfwm4_dir/assets-$j.svg ;
+	    sed -i 's/maximize-prelight/maximize-tmp/g' $xfwm4_dir/assets-$j.svg ;
+	    sed -i 's/maximize-pressed/maximize-prelight/g' $xfwm4_dir/assets-$j.svg ;
+	    sed -i 's/maximize-tmp/maximize-pressed/g' $xfwm4_dir/assets-$j.svg ;
+	done ;
+	sed -i 's/2[Ff]343[Ff]/393939/g' $xfwm4_dir/assets-red-dark.svg ;
+    elif [ "$param" != "blue" ]; then
+	for c in $(seq 0 1 $csize); do
+	    color1=colors0[$c]
+	    color2=colors$variant[$c]
+	    sed -i "s/${!color1}/${!color2}/g" $xfwm4_dir/assets-$param.svg ;
+	    sed -i "s/${!color1}/${!color2}/g" $xfwm4_dir/assets-$param-dark.svg ;
+	done ;
+    fi ;
+    
+    # gtk2.
+    cp $gtk2_dir/assets-blue.svg $gtk2_dir/assets-$param.svg ;
+    cp $gtk2_dir/assets-blue-dark.svg $gtk2_dir/assets-$param-dark.svg ;
+    
+    for c in $(seq 0 1 $csize); do
+	color1=colors0[$c]
+	color2=colors$variant[$c]
+	echo "Converting color ${!color1} to ${!color2} [$gtk2_dir/assets-$param.svg][$gtk2_dir/assets-$param-dark.svg]"
+	sed -i "s/${!color1}/${!color2}/g" $gtk2_dir/assets-$param.svg ;
+	sed -i "s/${!color1}/${!color2}/g" $gtk2_dir/assets-$param-dark.svg ;
+    done ;
+    files=$(find $arc_dir/common/gtk-2.0/ -type f ! -name "*.png") ;
+    for i in $files; do
+	for c in $(seq 0 1 $csize); do
+	    color1=colors0[$c]
+	    color2=colors$variant[$c]
+	    echo "Converting color ${!color1} to ${!color2} [$i]"
+	    sed -i "s/${!color1}/${!color2}/g" $i ;
+	done ;
+    done ;
+
+    # gtk3.
+    for i in $gtk3_versions; do
+	cp $gtk3_dir/$i/assets-blue.svg $gtk3_dir/$i/assets-$param.svg ;
+	for c in $(seq 0 1 $csize); do
+	    color1=colors0[$c]
+	    color2=colors$variant[$c]
+	    sed -i "s/${!color1}/${!color2}/g" $arc_dir/common/gtk-3.0/3.$i/sass/_colors.scss ;
+	    sed -i "s/${!color1}/${!color2}/g" $gtk3_dir/$i/assets-$param.svg ;
+	done ;
+	if [ "$param" == "red" ]; then	
+	    sed -i 's/close-hover/close-tmp/g' $gtk3_dir/$i/assets-red.svg ;
+	    sed -i 's/close-active/close-hover/g' $gtk3_dir/$i/assets-red.svg ;
+	    sed -i 's/close-tmp/close-active/g' $gtk3_dir/$i/assets-red.svg ;
+	    sed -i 's/maximize-hover/maximize-tmp/g' $gtk3_dir/$i/assets-red.svg ;
+	    sed -i 's/maximize-active/maximize-hover/g' $gtk3_dir/$i/assets-red.svg ;
+	    sed -i 's/maximize-tmp/maximize-active/g' $gtk3_dir/$i/assets-red.svg ;
+	    sed -i 's/minimize-hover/minimize-tmp/g' $gtk3_dir/$i/assets-red.svg ;
+	    sed -i 's/minimize-active/minimize-hover/g' $gtk3_dir/$i/assets-red.svg ;
+	    sed -i 's/minimize-tmp/minimize-active/g' $gtk3_dir/$i/assets-red.svg ;
+	fi ;
+    done ;
+
+    # cinnamon.
+    for c in $(seq 0 1 $csize); do
+	color1=colors0[$c]
+	color2=colors$variant[$c]
+	sed -i "s/${!color1}/${!color2}/g" $arc_dir/common/cinnamon/sass/_colors.scss ;
+	files=$(find $arc_dir/common/cinnamon/ -type f -name "*.svg") ;
+	for i in $files; do
+	    sed -i "s/${!color1}/${!color2}/g" $i ;
+	done ;
+    done ;
+
+    # gnome-shell.
+    for i in $gtk3_versions; do
+	for c in $(seq 0 1 $csize); do
+	    color1=colors0[$c]
+	    color2=colors$variant[$c]
+	    sed -i "s/${!color1}/${!color2}/g" $arc_dir/common/gnome-shell/3.$i/sass/_colors.scss ;
+	    files=$(find $arc_dir/common/gnome-shell/3.$i -type f -name "*.svg") ;
+	    for i in $files; do
+		sed -i "s/${!color1}/${!color2}/g" $i ;
+	    done ;
+	done ;
+    done;
+    echo "Done." ;
+}
+
+#
+# copy_original_assets - Use the assets of the original Arc theme.
+#
+copy_original_assets()
+{
+    # xfwm4
+    mv $xfwm4_dir/assets-blue.svg $xfwm4_dir/assets-blue.svg.bak ;
+    mv $xfwm4_dir/assets-blue-dark.svg $xfwm4_dir/assets-blue-dark.svg.bak ;
+    cp $arc_dir/common/xfwm4/assets.svg $xfwm4_dir/assets-blue.svg ;
+    cp $arc_dir/common/xfwm4/assets-dark.svg $xfwm4_dir/assets-blue-dark.svg ;
+
+    # gtk2
+    mv $gtk2_dir/assets-blue.svg $gtk2_dir/assets-blue.svg.bak ;
+    mv $gtk2_dir/assets-blue-dark.svg $gtk2_dir/assets-blue-dark.svg.bak ;
+    cp $arc_dir/common/gtk-2.0/assets.svg $gtk2_dir/assets-blue.svg ;
+    cp $arc_dir/common/gtk-2.0/assets-dark.svg $gtk2_dir/assets-blue-dark.svg ;
+
+    # gtk3
+    for i in $gtk3_versions; do
+	mv $gtk3_dir/$i/assets-blue.svg $gtk3_dir/$i/assets-blue.svg.bak ;
+	cp $arc_dir/common/gtk-3.0/3.$i/assets.svg $gtk3_dir/$i/assets-blue.svg ;
+    done ;
+}
+
+#
+# revert_custom_assets - Revert back the custom assets.
+#
+revert_custom_assets() {
+    # xfwm4
+    mv $xfwm4_dir/assets-blue.svg.bak $xfwm4_dir/assets-blue.svg ;
+    mv $xfwm4_dir/assets-blue-dark.svg.bak $xfwm4_dir/assets-blue-dark.svg ;
+
+    # gtk2
+    mv $gtk2_dir/assets-blue.svg.bak $gtk2_dir/assets-blue.svg ;
+    mv $gtk2_dir/assets-blue-dark.svg.bak $gtk2_dir/assets-blue-dark.svg ;
+
+    # gtk3
+    for i in $gtk3_versions; do
+	mv $gtk3_dir/$i/assets-blue.svg.bak $gtk3_dir/$i/assets-blue.svg ;
+    done;
+}
+    
+#
+# install_variant - Installs a theme variant.
+# $1: The hidpi flag (0 for normal, 1 for hidpi).
+# $2: The variant name.
+#  
+install_variant()
+{
+    init ;
+
+    echo "Installing Arc-$2..." ;
+    
+    # Check if the user wants the original assets.
+    if [ $original -eq 1 ]; then
+	copy_original_assets ;
+    else
+	change_common ;
+    fi ;
+
+    # If the requested variant is not blue then map the original
+    # colors to the colors of the requested variant.
+    if [ "$2" != "blue" ] && [ "$2" != "blue-hidpi" ]; then
+	change_color $2 ;
+    fi ;
+
+    # Render the assets.
+    if [ $1 -eq 0 ]; then
+	render_assets 0 $2 ;
+    else
+	render_assets 1 $2 ;
+    fi	;
+
+    # Modify the target theme name and build the theme.
+    sed -i "s/Arc/Arc-$2/g" $arc_dir/common/Makefile.am ;    
+    cd $arc_dir/ ;
+    gulp ;
+    ./autogen.sh $arc_options ;
+    su -c "make install" && echo "Done." ;
+
+    # Revert back the original assets.
+    if [ $original -eq 1 ]; then
+	revert_custom_assets ;
+    fi ;
+}	     
+
+#
+# uninstall_variant - Uninstalls a theme variant.
+# $1: The variant name.
+#
+uninstall_variant()
+{
+    echo "Uninstalling Arc-$1..." ;
+    su -c "rm -r $prefix/share/themes/Arc-$1; rm -r $prefix/share/themes/Arc-$1-Dark; \
+rm -r $prefix/share/themes/Arc-$1-Darker " &&
+    echo "Done." ;
+}
+
+#
+# Parse the user parameters.
+#
+for i in "$@"; do
+    case $i in
+	-i=*|--install=*)
+	    param="${i#*=}" ;
+	    for j in $(seq 0 1 $vsize); do
+		if [ "$param" == "${variants[$j]}" ]; then
+		    variant=$j ;
+		    if [ $((j%2)) -eq 0 ]; then
+			hidpi=0 ;
+		    else
+			hidpi=1 ;
+		    fi ;
+		fi ;
+	    done ;
+	    if [ $variant -eq -1 ]; then
+		echo "Error: The variant $param is not supported." ;
+		exit 1 ;
+	    fi ;
+	    operation="install_variant" ;
+	    shift ;
+	    ;;
+	-u=*|--uninstall=*)
+	    param="${i#*=}" ;
+	    for j in $(seq 0 1 $vsize); do
+		if [ "$param" == "${variants[$j]}" ]; then
+		    variant=$j ;
+		fi ;
+	    done ;
+	    if [ $variant -eq -1 ]; then
+		echo "Error: The variant $param is not supported." ;
+		exit 1 ;
+	    fi ;
+	    operation="uninstall_variant" ;
+	    shift ;
+	    ;;
+	-v=*|--gtk3-versions=*)
+	    param="${i#*=}" ;
+	    if [ "$param" != "" ]; then
+		gtk3_versions="$param" ;
+	    else
+		echo "Error: -g, --gtk3-versions requires a parameter." ;
+		exit 1 ;
+	    fi ;
+	    shift ;
+	    ;;
+	-d|--disable-dark)
+	    arc_options+=" --disable-dark --disable-darker" ;
+	    shift ;
+	    ;;
+	-o|--original)
+	    original=1 ;
+	    shift ;
+	    ;;
+	-c|--clear)
+	    operation="clear" ;
+	    shift ;
+	    ;;
+	-h|--help)
+	    operation="print_help" ;
+	    shift ;
+	    ;;
+    esac ;
+done ;
+
+if [ "$operation" == "" ]; then
+    print_help ;
+    exit 0 ;
+fi ;
+
+eval $operation $hidpi ${variants[$variant]} ;
+exit 0 
+
