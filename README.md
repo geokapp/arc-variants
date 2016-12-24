@@ -122,8 +122,9 @@ You can use the `-u, --uninstall` flag to uninstall a variant. E.g.:
 
 Other options to pass to arc-variants are
 
-    --clear     Delete all the generated folder inside the tool's folder.
-    --help      Print a help message.
+    -o, --original  Preserve the original assets of the vanilla Arc theme.
+    -c, --clear     Delete all the generated folder inside the tool's folder.
+    -h, --help      Print a help message.
 
 After the installation is complete you can activate the theme with `gnome-tweak-tool` or a similar program by selecting `Arc`, `Arc-Darker` or `Arc-Dark` as Window/GTK+ theme and `Arc` or `Arc-Dark` as Gnome Shell/Cinnamon theme.
 
