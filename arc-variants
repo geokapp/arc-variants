@@ -21,70 +21,54 @@
 # * cinnamon
 # * gnome-shell
 #
-# Last updated: 24-12-2016
+# Last updated: 25-12-2016
 #
 
 prefix="/usr" ;
 arc_options="--disable-transparency --disable-unity --disable-metacity --prefix=$prefix" ;
-deps_deb="sed autoconf automake pkg-config git inkscape optipng" ;
-deps_rpm="sed autoconf automake pkgconfig git inkscape optipng" ;
+deps_deb="sed python autoconf automake pkg-config git inkscape optipng" ;
+deps_rpm="sed python autoconf automake pkgconfig git inkscape optipng" ;
 deps=$deps_deb ;
-workdir=$(pwd) ;
-gtk2_dir=$workdir/internal/gtk2 ;
-gtk3_dir=$workdir/internal/gtk3 ;
-xfwm4_dir=$workdir/internal/xfwm4 ;
-arc_dir=$workdir/arc-theme ;
+work_dir=$(pwd) ;
+scripts_dir=$work_dir/internal/scripts ;
+gtk2_dir=$work_dir/internal/gtk2 ;
+gtk3_dir=$work_dir/internal/gtk3 ;
+xfwm4_dir=$work_dir/internal/xfwm4 ;
+arc_dir=$work_dir/arc-theme ;
 arc_git="https://github.com/horst3180/arc-theme" ;
 gtk3_versions="14 16 18 20 22" ;
-variant=-1 ;
-operation="" ;
 original=0 ;
 dpi=140 ;
 
-# The size of the variant names array minus 1.
-vsize=7 ;
+# The last element's index of the variants array.
+vsize=3 ;
 
-# The size of the color array minus 1.
-csize=19 ;
+# The build-in color names.
+variants=("blue" "red" "green" "brown") ;
 
-# The color names.
-variants=("blue" "blue-hidpi" "red" "red-hidpi" "green" "green-hidpi" "brown" "brown-hidpi") ;
+# The last element's index  of the colorN array. 
+csize=20 ;
 
 # Blue (The base color).
 colors0=("5294[Ee]2"    "353945"       "2[Bb]2[Ee]37" "5[Cc]616[Cc]" "404552"       "3[Ff]4453" \
-			"2[Ff]343[Ff]" "383[Cc]4[Aa]" "505666"       "3[Ee]4350"    "3[Ee]434[Ff]" \
-			"3[Ee]4351"    "2[Ee]3340"    "444[Aa]58"    "393[Ff]4[Cc]" "363[Bb]48" \
-			"313541"       "39404[Dd]"    "353[Bb]48"    "21252[Bb]") ;
-
-
-colors1=("5294[Ee]2"    "353945"       "2[Bb]2[Ee]37" "5[Cc]616[Cc]" "404552"       "3[Ff]4453" \
-			"2[Ff]343[Ff]" "383[Cc]4[Aa]" "505666"       "3[Ee]4350"    "3[Ee]434[Ff]" \
-			"3[Ee]4351"    "2[Ee]3340"    "444[Aa]58"    "393[Ff]4[Cc]" "363[Bb]48" \
-			"313541"       "39404[Dd]"    "353[Bb]48"    "21252[Bb]") ;
+	 "2[Ff]343[Ff]" "383[Cc]4[Aa]" "505666"       "3[Ee]4350"    "3[Ee]434[Ff]" "3[Ee]4351" \
+	 "2[Ee]3340"    "444[Aa]58"    "393[Ff]4[Cc]" "363[Bb]48"    "313541"       "39404[Dd]" \
+	 "353[Bb]48"    "21252[Bb]"    "[Aa][Ff][Bb]8[Cc]5") ;
 
 # Red.
-colors2=("e25252" "3d3d3d" "313131" "626262" "484848" "494949" "393939" "424242" "5f5f5f" \
-		  "494949" "454545" "4a4a4a" "373737" "555555" "444444" "414141" "3d3d3d" \
-		  "484848" "494949" "292929");
-colors3=("e25252" "3d3d3d" "313131" "626262" "484848" "494949" "393939" "424242" "5f5f5f" \
-		  "494949" "454545" "4a4a4a" "373737" "555555" "444444" "414141" "3d3d3d" \
-		  "484848" "494949" "292929");
+colors1=("e25252" "3d3d3d" "313131" "626262" "484848" "494949" "393939" "424242" "5f5f5f" \
+	 "494949" "454545" "4a4a4a" "373737" "555555" "444444" "414141" "3d3d3d" "484848" \
+	 "494949" "292929" "e0e0e0");
 
 # Green.
-colors4=("4DBF90" "35453E" "2B3732" "5C6C65" "40524A" "3F534A" "2F3F38" "384A43" "50665D" \
-		  "3E5049" "3E4F48" "3E5149" "2E4039" "445850" "394C44" "364841" "31413A" \
-		  "394d45" "354840" "212B27") ;
-colors5=("4DBF90" "35453E" "2B3732" "5C6C65" "40524A" "3F534A" "2F3F38" "384A43" "50665D" \
-		  "3E5049" "3E4F48" "3E5149" "2E4039" "445850" "394C44" "364841" "31413A" \
-		  "394d45" "354840" "212B27") ;
+colors2=("4DBF90" "35453E" "2B3732" "5C6C65" "40524A" "3F534A" "2F3F38" "384A43" "50665D" \
+	 "3E5049" "3E4F48" "3E5149" "2E4039" "445850" "394C44" "364841" "31413A" "394d45" \
+	 "354840" "212B27" "e0e0e0") ;
  
 # Brown.
-colors6=("BF824D" "453C35" "37312B" "6C635C" "524840" "53483F" "3F362F" "4A4038" "665A50" \
-		  "50463E" "4F463E" "51473E" "40362E" "584D44" "4C4239" "483E36" "413831" \
-		  "4d4239" "483E35" "2B2621") ;
-colors7=("BF824D" "453C35" "37312B" "6C635C" "524840" "53483F" "3F362F" "4A4038" "665A50" \
-		  "50463E" "4F463E" "51473E" "40362E" "584D44" "4C4239" "483E36" "413831" \
-		  "4d4239" "483E35" "2B2621");
+colors3=("BF824D" "453C35" "37312B" "6C635C" "524840" "53483F" "3F362F" "4A4038" "665A50" \
+	 "50463E" "4F463E" "51473E" "40362E" "584D44" "4C4239" "483E36" "413831" "4d4239" \
+	 "483E35" "2B2621" "e0e0e0") ;
 
 #
 # print_help - Prints a help message.
@@ -93,24 +77,30 @@ print_help()
 {
     echo 'Usage: ./arc-variants [options]' ;
     echo 'Options:' ;
-    echo '  -i, --install=VAR:      Install the variant VAR. The supported variants are:' ;
-    echo -n '                          ' ;
+    echo '  -i, --install=VAR:      Install the variant VAR. The VAR argument has the' ;
+    echo '                          form: name[-hidpi][:colorhex]. The name field is' ;
+    echo '                          the name of the color variant. It can be either a' ;
+    echo '                          build-in variant name, or a user-defined name. In' ;
+    echo '                          the former case, the colorhex field is omitted. But,' ;
+    echo '                          in the latter case it is mandatory. The hidpi argument' ;
+    echo '                          informs the tool to build the hidpi version of the' ;
+    echo '                          requested variant. For example: -i=red-hidpi informs' ;
+    echo '                          the tool to install the hidpi version of the build-in' ;
+    echo '                          red variant. -i=mycolor:7636a3 informs the tool to' ;
+    echo '                          install the user defined color variant mycolor and' ;
+    echo '                          to create shades of #7636a3. The supported build-in' ;
+    echo -n '                          variants are: ' ;
     for j in $(seq 0 1 $vsize); do
 	echo -n "${variants[$j]}," ;
     done ;
     echo -e '\b.' ;
-    echo '  -u, --uninstall=VAR:    Uninstall the variant VAR. The supported variants are:' ;
-    echo -n '                          ' ;
-    for j in $(seq 0 1 $vsize); do
-	echo -n "${variants[$j]}," ;
-    done ;
-    echo -e '\b.' ;
+    echo '  -u, --uninstall=NAME:   Uninstall the variant with name NAME.' ; 
     echo '  -v, --gtk3-version=VER: Set the gtk3 versions. The supported versions are: 14,' ;
     echo '                          16, 18, 20, 22. E.g., -v="18 20 22". The default is to' ;
     echo '                          build the theme for all versions.' ;
     echo '  -p, --dpi               Set a custom DPI value for the high DPI variants. The' ;
     echo '                          default is 140.' ;
-    echo '  -d, --disable-dark:     Disable al lthe dark variants.' ;
+    echo '  -d, --disable-dark:     Disable all the dark variants.' ;
     echo '  -o, --original:         Use the original assets of the Arc theme.' ;
     echo '  -c, --clear:            Delete all the generated content.' ;
     echo '  -h, --help:             Print this help message.' ;
@@ -156,7 +146,7 @@ init()
     check_dependencies ;
 
     # fix permissions.
-    chmod +x $workdir/internal/*.sh ;
+    chmod +x $work_dir/internal/*.sh ;
 
     # Prepare the original Arc theme.
     prepare_arc ;
@@ -186,7 +176,7 @@ clear()
 #
 prepare_arc()
 {
-    cd $workdir ;
+    cd $work_dir ;
 
     # Clone the original Arc theme.
     echo "Cloning Arc-theme..." ;
@@ -227,32 +217,38 @@ prepare_arc()
 #
 render_assets()
 {
-    cd $workdir ;
-    # Strip the hidpi suffix if it exists.
-    param=${2%-hidpi}
+    hidpi=$1 ;
+    name=$2 ;
 
     # Render xfwm4 assets.
     echo "Rendering xfwm4 assets..." ;
     rm -rf $xfwm4_dir/assets/* ;
     rm -rf $xfwm4_dir/assets-dark/* ;
-    if [ $1 -eq 0 ]; then
-	./internal/xfwm4-render-assets.sh $xfwm4_dir/assets-$param $xfwm4_dir/assets $xfwm4_dir/assets.txt ;
+    if [ $hidpi -eq 0 ]; then
+	$scripts_dir/xfwm4-render-assets.sh $xfwm4_dir/assets-$name \
+					    $xfwm4_dir/assets \
+					    $xfwm4_dir/assets.txt ;
     else
-	./internal/xfwm4-hidpi-render-assets.sh $xfwm4_dir/assets-$param $xfwm4_dir/assets $xfwm4_dir/assets.txt $dpi ;
+	$scripts_dir/xfwm4-hidpi-render-assets.sh $xfwm4_dir/assets-$name \
+						  $xfwm4_dir/assets \
+						  $xfwm4_dir/assets.txt $dpi ;
     fi ;
     cp -rf $xfwm4_dir/assets $arc_dir/common/xfwm4/. ;
     cp -rf $xfwm4_dir/assets-dark $arc_dir/common/xfwm4/. ;
-    
     echo "Done." ;
 
     # Render gtk2 assets.
     echo "Rendering gtk2 assets..."
     rm -rf $gtk2_dir/assets/* ;
     rm -rf $gtk2_dir/assets-dark/* ;
-    if [ $1 -eq 0 ]; then
-	./internal/gtk2-render-assets.sh $gtk2_dir/assets-$param $gtk2_dir/assets $gtk2_dir/assets.txt ;
+    if [ $hidpi -eq 0 ]; then
+	$scripts_dir/gtk2-render-assets.sh $gtk2_dir/assets-$name \
+					   $gtk2_dir/assets \
+					   $gtk2_dir/assets.txt ;
     else
-	./internal/gtk2-hidpi-render-assets.sh $gtk2_dir/assets-$param $gtk2_dir/assets $gtk2_dir/assets.txt $dpi ;
+	$scripts_dir/gtk2-hidpi-render-assets.sh $gtk2_dir/assets-$name \
+						 $gtk2_dir/assets \
+						 $gtk2_dir/assets.txt $dpi ;
     fi ;
     cp -rf $gtk2_dir/assets $arc_dir/common/gtk-2.0/. ;
     cp -rf $gtk2_dir/assets-dark $arc_dir/common/gtk-2.0/. ;
@@ -263,10 +259,14 @@ render_assets()
     for i in $gtk3_versions; do
 	echo "Rendering gtk3.$i assets..." ;
 	rm -rf $gtk3_dir/$i/assets/*
-	if [ $1 -eq 0 ]; then
-	    ./internal/gtk3-render-assets.sh $gtk3_dir/$i/assets-$param $gtk3_dir/$i/assets $gtk3_dir/$i/assets.txt ;
+	if [ $hidpi -eq 0 ]; then
+	    $scripts_dir/gtk3-render-assets.sh $gtk3_dir/$i/assets-$name \
+					       $gtk3_dir/$i/assets \
+					       $gtk3_dir/$i/assets.txt ;
 	else
-	    ./internal/gtk3-hidpi-render-assets.sh $gtk3_dir/$i/assets-$param $gtk3_dir/$i/assets $gtk3_dir/$i/assets.txt $dpi ;
+	    $scripts_dir/gtk3-hidpi-render-assets.sh $gtk3_dir/$i/assets-$name \
+						     $gtk3_dir/$i/assets \
+						     $gtk3_dir/$i/assets.txt $dpi ;
 	fi ;
 	cp -rf $gtk3_dir/$i/assets $arc_dir/common/gtk-3.0/3.$i/. ;
 	echo "Done." ;
@@ -278,9 +278,6 @@ render_assets()
 #
 change_common()
 {
-    cd $workdir ;
-    
-    # Change color e7e8eb to f5f6f7.
     # xfwm4.
     sed -i 's/[Ee]7[Ee]8[Ee][Bb]/f5f6f7/g' $arc_dir/common/xfwm4/themerc ;
     sed -i 's/[Ee]7[Ee]8[Ee][Bb]/f5f6f7/g' $xfwm4_dir/assets-blue.svg ;
@@ -304,22 +301,28 @@ change_common()
 }
 
 #
-# change_color - Changes the theme's color to a new variant.
+# change_color_buildin - Changes the theme's color to a new variant.
 # $1: The variant name.
 #
-change_color()
+change_color_buildin()
 {
-    cd $workdir ;
-    param=${1%-hidpi}
+    name=$1 ;
     
     echo "Changing theme to $1 variant..." ;
     
+    # Get the correct color map.
+    for j in $(seq 0 1 $vsize); do
+	if [ "$name" == "${variants[$j]}" ]; then
+	    variant=$j ;
+	fi ;
+    done ;
+    
     # xfwm4.
-    cp $xfwm4_dir/assets-blue.svg $xfwm4_dir/assets-$param.svg ;
-    cp $xfwm4_dir/assets-blue-dark.svg $xfwm4_dir/assets-$param-dark.svg ;
+    cp $xfwm4_dir/assets-blue.svg $xfwm4_dir/assets-$name.svg ;
+    cp $xfwm4_dir/assets-blue-dark.svg $xfwm4_dir/assets-$name-dark.svg ;
     
     # Change title buttons.
-    if [ "$param" == "red" ]; then
+    if [ "$name" == "red" ]; then
 	for j in "red" "red-dark"; do
 	    sed -i 's/shade-prelight/shade-tmp/g' $xfwm4_dir/assets-$j.svg ;
 	    sed -i 's/shade-pressed/shade-prelight/g' $xfwm4_dir/assets-$j.svg ;
@@ -339,48 +342,44 @@ change_color()
 	done ;
 	sed -i 's/2[Ff]343[Ff]/393939/g' $xfwm4_dir/assets-red-dark.svg ;
 	sed -i 's/353[Bb]48/494949/g' $xfwm4_dir/assets-red-dark.svg ;
-	sed -i 's/21252[Bb]/292929/g' $xfwm4_dir/assets-red-dark.svg ;
-	
-    elif [ "$param" != "blue" ]; then
+	sed -i 's/21252[Bb]/292929/g' $xfwm4_dir/assets-red-dark.svg ;	
+    elif [ "$name" != "blue" ]; then
 	for c in $(seq 0 1 $csize); do
-	    color1=colors0[$c]
-	    color2=colors$variant[$c]
-	    sed -i "s/${!color1}/${!color2}/g" $xfwm4_dir/assets-$param.svg ;
-	    sed -i "s/${!color1}/${!color2}/g" $xfwm4_dir/assets-$param-dark.svg ;
+	    color1=colors0[$c] ;
+	    color2=colors$variant[$c] ;
+	    sed -i "s/${!color1}/${!color2}/g" $xfwm4_dir/assets-$name.svg ;
+	    sed -i "s/${!color1}/${!color2}/g" $xfwm4_dir/assets-$name-dark.svg ;
 	done ;
     fi ;
     
     # gtk2.
-    cp $gtk2_dir/assets-blue.svg $gtk2_dir/assets-$param.svg ;
-    cp $gtk2_dir/assets-blue-dark.svg $gtk2_dir/assets-$param-dark.svg ;
-    
+    cp $gtk2_dir/assets-blue.svg $gtk2_dir/assets-$name.svg ;
+    cp $gtk2_dir/assets-blue-dark.svg $gtk2_dir/assets-$name-dark.svg ;    
     for c in $(seq 0 1 $csize); do
-	color1=colors0[$c]
-	color2=colors$variant[$c]
-	echo "Converting color ${!color1} to ${!color2} [$gtk2_dir/assets-$param.svg][$gtk2_dir/assets-$param-dark.svg]"
-	sed -i "s/${!color1}/${!color2}/g" $gtk2_dir/assets-$param.svg ;
-	sed -i "s/${!color1}/${!color2}/g" $gtk2_dir/assets-$param-dark.svg ;
+	color1=colors0[$c] ;
+	color2=colors$variant[$c] ;
+	sed -i "s/${!color1}/${!color2}/g" $gtk2_dir/assets-$name.svg ;
+	sed -i "s/${!color1}/${!color2}/g" $gtk2_dir/assets-$name-dark.svg ;
     done ;
     files=$(find $arc_dir/common/gtk-2.0/ -type f ! -name "*.png") ;
     for i in $files; do
 	for c in $(seq 0 1 $csize); do
-	    color1=colors0[$c]
-	    color2=colors$variant[$c]
-	    echo "Converting color ${!color1} to ${!color2} [$i]"
+	    color1=colors0[$c] ;
+	    color2=colors$variant[$c] ;
 	    sed -i "s/${!color1}/${!color2}/g" $i ;
 	done ;
     done ;
 
     # gtk3.
     for i in $gtk3_versions; do
-	cp $gtk3_dir/$i/assets-blue.svg $gtk3_dir/$i/assets-$param.svg ;
+	cp $gtk3_dir/$i/assets-blue.svg $gtk3_dir/$i/assets-$name.svg ;
 	for c in $(seq 0 1 $csize); do
 	    color1=colors0[$c]
 	    color2=colors$variant[$c]
 	    sed -i "s/${!color1}/${!color2}/g" $arc_dir/common/gtk-3.0/3.$i/sass/_colors.scss ;
-	    sed -i "s/${!color1}/${!color2}/g" $gtk3_dir/$i/assets-$param.svg ;
+	    sed -i "s/${!color1}/${!color2}/g" $gtk3_dir/$i/assets-$name.svg ;
 	done ;
-	if [ "$param" == "red" ]; then	
+	if [ "$name" == "red" ]; then	
 	    sed -i 's/close-hover/close-tmp/g' $gtk3_dir/$i/assets-red.svg ;
 	    sed -i 's/close-active/close-hover/g' $gtk3_dir/$i/assets-red.svg ;
 	    sed -i 's/close-tmp/close-active/g' $gtk3_dir/$i/assets-red.svg ;
@@ -395,8 +394,8 @@ change_color()
 
     # cinnamon.
     for c in $(seq 0 1 $csize); do
-	color1=colors0[$c]
-	color2=colors$variant[$c]
+	color1=colors0[$c] ;
+	color2=colors$variant[$c] ;
 	sed -i "s/${!color1}/${!color2}/g" $arc_dir/common/cinnamon/sass/_colors.scss ;
 	files=$(find $arc_dir/common/cinnamon/ -type f -name "*.svg") ;
 	for i in $files; do
@@ -407,12 +406,91 @@ change_color()
     # gnome-shell.
     for i in $gtk3_versions; do
 	for c in $(seq 0 1 $csize); do
-	    color1=colors0[$c]
-	    color2=colors$variant[$c]
+	    color1=colors0[$c] ;
+	    color2=colors$variant[$c] ;
 	    sed -i "s/${!color1}/${!color2}/g" $arc_dir/common/gnome-shell/3.$i/sass/_colors.scss ;
 	    files=$(find $arc_dir/common/gnome-shell/3.$i -type f -name "*.svg") ;
-	    for i in $files; do
-		sed -i "s/${!color1}/${!color2}/g" $i ;
+	    for j in $files; do
+		sed -i "s/${!color1}/${!color2}/g" $j ;
+	    done ;
+	done ;
+    done;
+    echo "Done." ;
+}
+
+#
+# change_color_user - Changes the theme's color to a new user defined variant.
+# $1: The variant name.
+# $2: The color name in hex.
+#
+change_color_user()
+{
+    name=$1
+    color=$2
+    
+    echo "Changing theme to $1 variant..." ;
+    
+    # xfwm4.
+    cp $xfwm4_dir/assets-blue.svg $xfwm4_dir/assets-$name.svg ;
+    cp $xfwm4_dir/assets-blue-dark.svg $xfwm4_dir/assets-$name-dark.svg ;
+    
+    # Change title buttons.
+    for c in $(seq 0 1 $csize); do
+	color1=colors0[$c]
+	color2=$(python $scripts_dir/map_color.py $color ${!color1})
+	sed -i "s/${!color1}/$color2/g" $xfwm4_dir/assets-$name.svg ;
+	sed -i "s/${!color1}/$color2/g" $xfwm4_dir/assets-$name-dark.svg ;
+    done ;
+        
+    # gtk2.
+    cp $gtk2_dir/assets-blue.svg $gtk2_dir/assets-$name.svg ;
+    cp $gtk2_dir/assets-blue-dark.svg $gtk2_dir/assets-$name-dark.svg ;    
+    for c in $(seq 0 1 $csize); do
+	color1=colors0[$c]
+	color2=$(python $scripts_dir/map_color.py $color ${!color1})
+	sed -i "s/${!color1}/$color2/g" $gtk2_dir/assets-$name.svg ;
+	sed -i "s/${!color1}/$color2/g" $gtk2_dir/assets-$name-dark.svg ;
+    done ;
+    files=$(find $arc_dir/common/gtk-2.0/ -type f ! -name "*.png") ;
+    for i in $files; do
+	for c in $(seq 0 1 $csize); do
+	    color1=colors0[$c]
+	    color2=$(python $scripts_dir/map_color.py $color ${!color1})
+	    sed -i "s/${!color1}/$color2/g" $i ;
+	done ;
+    done ;
+
+    # gtk3.
+    for i in $gtk3_versions; do
+	cp $gtk3_dir/$i/assets-blue.svg $gtk3_dir/$i/assets-$name.svg ;
+	for c in $(seq 0 1 $csize); do
+	    color1=colors0[$c]
+	    color2=$(python $scripts_dir/map_color.py $color ${!color1})
+	    sed -i "s/${!color1}/$color2/g" $arc_dir/common/gtk-3.0/3.$i/sass/_colors.scss ;
+	    sed -i "s/${!color1}/$color2/g" $gtk3_dir/$i/assets-$name.svg ;
+	done ;
+    done ;
+
+    # cinnamon.
+    for c in $(seq 0 1 $csize); do
+	color1=colors0[$c]
+	color2=$(python $scripts_dir/map_color.py $color ${!color1})
+	sed -i "s/${!color1}/$color2/g" $arc_dir/common/cinnamon/sass/_colors.scss ;
+	files=$(find $arc_dir/common/cinnamon/ -type f -name "*.svg") ;
+	for i in $files; do
+	    sed -i "s/${!color1}/$color2/g" $i ;
+	done ;
+    done ;
+
+    # gnome-shell.
+    for i in $gtk3_versions; do
+	for c in $(seq 0 1 $csize); do
+	    color1=colors0[$c]
+	    color2=$(python $scripts_dir/map_color.py $color ${!color1})
+	    sed -i "s/${!color1}/$color2/g" $arc_dir/common/gnome-shell/3.$i/sass/_colors.scss ;
+	    files=$(find $arc_dir/common/gnome-shell/3.$i -type f -name "*.svg") ;
+	    for j in $files; do
+		sed -i "s/${!color1}/$color2/g" $j ;
 	    done ;
 	done ;
     done;
@@ -463,14 +541,23 @@ revert_custom_assets() {
     
 #
 # install_variant - Installs a theme variant.
-# $1: The hidpi flag (0 for normal, 1 for hidpi).
-# $2: The variant name.
+# $1: The variant name. 
+# $2: The user defined color or the hidpi flag.
+# $3: The hidpi flag.
 #  
 install_variant()
 {
+    name=$1 ;
+    if [ "$2" == "hidpi" ]; then
+	hidpi=$2 ;
+    else
+	color=${2#"#"} ;
+	hidpi=$3 ;
+    fi ;
+
     init ;
 
-    echo "Installing Arc-$2..." ;
+    echo "Installing Arc-$name..." ;
     
     # Check if the user wants the original assets.
     if [ $original -eq 1 ]; then
@@ -481,19 +568,27 @@ install_variant()
 
     # If the requested variant is not blue then map the original
     # colors to the colors of the requested variant.
-    if [ "$2" != "blue" ] && [ "$2" != "blue-hidpi" ]; then
-	change_color $2 ;
+    if [ "$name" != "blue" ]; then
+	if [ ! -z $color ]; then
+	    change_color_user $name $color ;
+	else
+	    change_color_buildin $name ;
+	fi ;
     fi ;
 
     # Render the assets.
-    if [ $1 -eq 0 ]; then
-	render_assets 0 $2 ;
+    if [ -z $hidpi ]; then
+	render_assets 0 $name ;
     else
-	render_assets 1 $2 ;
+	render_assets 1 $name ;
     fi	;
 
     # Modify the target theme name and build the theme.
-    sed -i "s/Arc/Arc-$2/g" $arc_dir/common/Makefile.am ;    
+    if [ -z $hidpi ]; then
+	sed -i "s/Arc/Arc-$name/g" $arc_dir/common/Makefile.am ;
+    else
+	sed -i "s/Arc/Arc-$name-hidpi/g" $arc_dir/common/Makefile.am ;
+    fi ;
     cd $arc_dir/ ;
     gulp ;
     ./autogen.sh $arc_options ;
@@ -511,9 +606,11 @@ install_variant()
 #
 uninstall_variant()
 {
-    echo "Uninstalling Arc-$1..." ;
-    su -c "rm -r $prefix/share/themes/Arc-$1; rm -r $prefix/share/themes/Arc-$1-Dark; \
-rm -r $prefix/share/themes/Arc-$1-Darker " &&
+    name=$1 ;
+    
+    echo "Uninstalling Arc-$name..." ;
+    su -c "rm -r $prefix/share/themes/Arc-$name; rm -r $prefix/share/themes/Arc-$name-Dark; \
+rm -r $prefix/share/themes/Arc-$name-Darker " &&
     echo "Done." ;
 }
 
@@ -524,40 +621,44 @@ for i in "$@"; do
     case $i in
 	-i=*|--install=*)
 	    param="${i#*=}" ;
+	    IFS='-' read -a tmp <<< "$param"
+	    name=${tmp[0]} ;
+	    hidpi=${tmp[1]} ;
+	    if [ ! -z $hidpi ]; then
+		IFS=':' read -a tmp <<< "$hidpi" ;
+		hidpi=${tmp[0]} ;
+		color=${tmp[1]} ;
+		if [ "$hidpi" != "hidpi" ]; then
+		    name="$name-$hidpi" ;
+		    hidpi="" ;
+		fi ;
+	    else
+		IFS=':' read -a tmp <<< "$name"
+		name=${tmp[0]}
+		color=${tmp[1]}
+	    fi
 	    for j in $(seq 0 1 $vsize); do
-		if [ "$param" == "${variants[$j]}" ]; then
-		    variant=$j ;
-		    if [ $((j%2)) -eq 0 ]; then
-			hidpi=0 ;
-		    else
-			hidpi=1 ;
-		    fi ;
+		found=0 ;
+		if [ "$name" == "${variants[$j]}" ]; then
+		    found=1 ;
 		fi ;
 	    done ;
-	    if [ $variant -eq -1 ]; then
-		echo "Error: The variant $param is not supported." ;
+	    if [ $found -eq 0 ] && [ -z $color ]; then
+		echo "Error: The variant $name is not build-in. You must provide a custom color." ;
+		print_help
 		exit 1 ;
 	    fi ;
 	    operation="install_variant" ;
 	    shift ;
 	    ;;
 	-u=*|--uninstall=*)
-	    param="${i#*=}" ;
-	    for j in $(seq 0 1 $vsize); do
-		if [ "$param" == "${variants[$j]}" ]; then
-		    variant=$j ;
-		fi ;
-	    done ;
-	    if [ $variant -eq -1 ]; then
-		echo "Error: The variant $param is not supported." ;
-		exit 1 ;
-	    fi ;
+	    name="${i#*=}" ;
 	    operation="uninstall_variant" ;
 	    shift ;
 	    ;;
 	-v=*|--gtk3-versions=*)
  	    param="${i#*=}" ;
-	    if [ "$param" != "" ]; then
+	    if [ ! -z $param ]; then
 		gtk3_versions="$param" ;
 	    else
 		echo "Error: -g, --gtk3-versions requires a parameter." ;
@@ -567,7 +668,7 @@ for i in "$@"; do
 	    ;;
 	-p=*|--dpi=*)
  	    param="${i#*=}" ;
-	    if [ "$param" != "" ]; then
+	    if [ ! -z $param ]; then
 		dpi=$param ;
 	    else
 		echo "Error: -p, --dpi requires a parameter." ;
@@ -594,11 +695,11 @@ for i in "$@"; do
     esac ;
 done ;
 
-if [ "$operation" == "" ]; then
+if [ -z $operation  ]; then
     print_help ;
     exit 0 ;
 fi ;
 
-eval $operation $hidpi ${variants[$variant]} ;
+eval $operation $name $color $hidpi ;
 exit 0 
 
