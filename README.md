@@ -8,7 +8,7 @@ arc-variants adds some custom elements to the Arc theme. However, if you prefer 
 
 ## Variants 
 
-arc-variants generates four build-in color variants, as well as their respective dark and high DPI versions: blue, red, green, and brown, 
+arc-variants generates four build-in color variants, as well as their respective dark and high DPI versions: blue, red, green, and brown. 
 The user can also specify a custom color name accompanied with a color in hex format. In this case, the tool creates the new variant by generating shades of the specified color.
 
 ### arc-blue / arc-blue-hidpi
@@ -124,7 +124,7 @@ Other options to pass to arc-variants are:
 After the installation is complete you can activate the theme with `gnome-tweak-tool` or a similar program by selecting `Arc`, `Arc-Darker` or `Arc-Dark` as Window/GTK+ theme and `Arc` or `Arc-Dark` as Gnome Shell/Cinnamon theme.
 
 ## Bugs
-If you find a bug, please report it at https://github.com/geokapp/arc-theme/issues
+If you find a bug, please report it at https://github.com/geokapp/arc-variants/issues
 
 ## License
 arc-variants is available under the terms of the GPL-3.0. See `COPYING` for details.
