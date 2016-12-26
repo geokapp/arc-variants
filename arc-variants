@@ -150,6 +150,16 @@ init()
 
     # Prepare the original Arc theme.
     prepare_arc ;
+
+    # Create assets directories.
+    mkdir $xfwm4_dir/assets ;
+    mkdir $xfwm4_dir/assets-dark ;
+    mkdir $gtk2_dir/menubar-toolbar ;
+    mkdir $gtk2_dir/assets
+    mkdir $gtk2_dir/assets-dark
+    for i in $gtk3_versions; do
+	mkdir $gtk3_dir/$i/assets ;
+    done ;
 }
 
 #
