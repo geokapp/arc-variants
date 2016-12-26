@@ -598,6 +598,9 @@ install_variant()
     if [ $original -eq 1 ]; then
 	revert_custom_assets ;
     fi ;
+
+    # Clear the generated content.
+    clear ;
 }	     
 
 #
@@ -637,8 +640,8 @@ for i in "$@"; do
 		name=${tmp[0]}
 		color=${tmp[1]}
 	    fi
+	    found=0 ;
 	    for j in $(seq 0 1 $vsize); do
-		found=0 ;
 		if [ "$name" == "${variants[$j]}" ]; then
 		    found=1 ;
 		fi ;
