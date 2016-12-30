@@ -449,7 +449,7 @@ change_color_user()
 	name=$1 ;
 	color=$2 ;
     fi ;
-    echo "Changing theme to $1 variant..." ;
+    echo "Changing theme to $1 ($color) variant..." ;
     
     # xfwm4.
     cp $xfwm4_dir/assets-blue.svg $xfwm4_dir/assets-$name.svg ;
