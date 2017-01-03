@@ -1,4 +1,5 @@
 # arc-variants
+[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://www.paypal.me/geokapp)
 
 arc-variants is a tool that generates new color variants of the [Arc theme](https://github.com/horst3180/arc-theme). In addition to the new color variants, arc-variants can generate their respective high DPI versions. Currently, the following environments are supported: GTK2, GTK3 (up to 3.22), Gnome Shell, xfwm4, and Cinnamon.
 
@@ -58,6 +59,18 @@ The user can also specify a custom color name accompanied with a color in hex fo
 ### arc-brown-darker / arc-brown-hidpi-darker
 
 ![A screenshot of arc-brown-hidpi-darker](https://raw.githubusercontent.com/geokapp/arc-variants/master/examples/brown-darker.png)
+
+### arc-silver / arc-silver-hidpi (base color: #c1c1c1)
+
+![A screenshot of arc-silver-hidpi](https://raw.githubusercontent.com/geokapp/arc-variants/master/examples/silver-light.png)
+
+### arc-silver-dark / arc-silver-hidpi-dark (base color: #c1c1c1)
+
+![A screenshot of arc-silver-hidpi-dark](https://raw.githubusercontent.com/geokapp/arc-variants/master/examples/silver-dark.png)
+
+### arc-silver-darker / arc-silver-hidpi-darker (base color: #c1c1c1)
+
+![A screenshot of arc-silver-hidpi-darker](https://raw.githubusercontent.com/geokapp/arc-variants/master/examples/silver-darker.png)
 
 ## Installation and usage
 
@@ -131,8 +144,8 @@ arc-variants is available under the terms of the GPL-3.0. See `COPYING` for deta
 
 ## Full Preview
 
-![A full screenshot of the Arc Red light variant](http://i.imgur.com/t7V3P1M.png)
+![A full screenshot of the Arc Red light variant](http://i.imgur.com/VtOKUta.png)
 
-![A full screenshot of the Arc Red darker variant](http://i.imgur.com/BGLiWLf.png)
+![A full screenshot of the Arc Red darker variant](http://i.imgur.com/P82CLnr.png)
 
 <sub>Screenshot Details: Icons: [Vibrancy-Colors](http://www.ravefinity.com/p/vibrancy-colors-gtk-icon-theme.html) | [Wallpaper](http://i.imgur.com/dc8cIit.jpg) | XFCE 4.12 </sub>
