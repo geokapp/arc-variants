@@ -24,9 +24,9 @@
 
 THEME_PREFIX="/usr" ;
 ARC_OPTIONS="--disable-transparency --disable-unity --disable-metacity --prefix=${THEME_PREFIX}" ;
-DEPS_DEB="sed python autoconf automake pkg-config git inkscape optipng nvm" ;
-DEPS_RPM="sed python autoconf automake pkgconfig git inkscape optipng nvm" ;
-DEPS_PAC="sed python autoconf automake pkg-config git inkscape optipng nvm" ;
+DEPS_DEB="sed python autoconf automake pkg-config git inkscape optipng npm" ;
+DEPS_RPM="sed python autoconf automake pkgconfig git inkscape optipng npm" ;
+DEPS_PAC="sed python autoconf automake pkg-config git inkscape optipng npm" ;
 WORK_DIR=$(pwd) ;
 SCRIPTS_DIR=${WORK_DIR}/internal/scripts ;
 GTK2_DIR=${WORK_DIR}/internal/gtk2 ;
@@ -147,9 +147,6 @@ check_dependencies()
 #
 init()
 {
-    # To load nvm.
-    source ~/.bashrc ;
-
     # Clear any previous builds.
     clear ;
     
@@ -215,14 +212,9 @@ prepare_arc()
     # Prepare the node-sass environment.
     echo "Preparing node-sass..." ;
     cd common ;    
-    if nvm i ; then
-	if npm i ; then
-	    if npm i -g gulp ; then
-		echo "Done." ;
-	    else
-		echo "Error: Node-sass preparation failed." ;
-		exit 1 ;
-	    fi ;
+    if npm i ; then
+	if npm i -g gulp ; then
+	    echo "Done." ;
 	else
 	    echo "Error: Node-sass preparation failed." ;
 	    exit 1 ;
