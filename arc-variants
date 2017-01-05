@@ -24,9 +24,9 @@
 
 THEME_PREFIX="/usr" ;
 ARC_OPTIONS="--disable-transparency --disable-unity --disable-metacity --prefix=${THEME_PREFIX}" ;
-DEPS_DEB="sed python autoconf automake pkg-config git inkscape optipng" ;
-DEPS_RPM="sed python autoconf automake pkgconfig git inkscape optipng" ;
-DEPS=${DEPS_DEB} ;
+DEPS_DEB="sed python autoconf automake pkg-config git inkscape optipng nvm" ;
+DEPS_RPM="sed python autoconf automake pkgconfig git inkscape optipng nvm" ;
+DEPS_PAC="sed python autoconf automake pkg-config git inkscape optipng nvm" ;
 WORK_DIR=$(pwd) ;
 SCRIPTS_DIR=${WORK_DIR}/internal/scripts ;
 GTK2_DIR=${WORK_DIR}/internal/gtk2 ;
@@ -116,9 +116,17 @@ check_dependencies()
     local i ;
 
     echo "Checking dependencies..." ;
-    if ! hash "apt" 2> /dev/null; then
+    
+    if hash "dpkg" 2> /dev/null; then
+	DEPS=${DEPS_DEB} ;
+    elif hash "rpm" 2> /dev/null; then
 	DEPS=${DEPS_RPM} ;
+    elif hash "pacman" 2> /dev/null; then
+	DEPS=${DEPS_PAC} ;
+    else
+	echo "Error. Your Linux distribution is not yet supported."
     fi ;
+    
     for i in ${DEPS}; do	
 	echo -n "Checking ${i}..." ;
 	if hash ${i} 2> /dev/null; then
