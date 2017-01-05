@@ -82,7 +82,7 @@ To build the theme variants the following packages are required:
 * `pkg-config` or `pkgconfig` if you use Fedora
 * `libgtk-3-dev` for Debian based distros or `gtk3-devel` for RPM based distros
 * `git` 
-* `nvm` (https://github.com/creationix/nvm)
+* `npm` 
 * `optipng`
 * `inkscape`
 * `python`
