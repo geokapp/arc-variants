@@ -87,9 +87,11 @@ To build the theme variants the following packages are required:
 * `inkscape`
 * `python`
 
+**Note:** If you use a docker container to build the theme then you don't need to install the above packages on your host.
+
 **Note:** If your distribution doesn't ship separate development packages you just need GTK 3 instead of the `-dev` packages.
 
-For the theme to function properly, install the following
+For the theme to function properly, install the following:
 * Gnome Shell, GTK 3.14 - 3.22
 * The `gnome-themes-standard` package
 * The murrine engine. This has different names depending on your distro.
@@ -125,7 +127,24 @@ You can use the `-u, --uninstall` flag to uninstall a variant. E.g.:
 
     ./arc_variants -u=red
 
-### 4. Other Options
+### 4. Build and install a theme variant using a Docker container
+(Credits to @MoriTanosuke for providing the Dockerfile and the instructions). 
+
+Build the image:
+
+    docker build -t arc-variants .
+
+Start a temporary container, will be removed when everything is done:
+
+    docker run --rm -it -v $(pwd):/src -w /src arc-variants
+
+Then build the theme in the temporary container. For example:
+
+    ./arc-variants --install=blue-hidpi && cp -r /usr/share/themes/Arc* . && exit
+
+Now you should have the theme directories in the local directory on your host. Copy the files into /usr/share/themes and switch to your ARC theme.
+
+### 5. Other Options
 
 Other options to pass to arc-variants are:
 
