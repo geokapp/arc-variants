@@ -24,9 +24,9 @@
 
 THEME_PREFIX="/usr" ;
 ARC_OPTIONS="--disable-transparency --disable-unity --disable-metacity --prefix=${THEME_PREFIX}" ;
-DEPS_DEB="sed python autoconf automake pkg-config git inkscape optipng npm" ;
-DEPS_RPM="sed python autoconf automake pkgconfig git inkscape optipng npm" ;
-DEPS_PAC="sed python autoconf automake pkg-config git inkscape optipng npm" ;
+DEPS_DEB="sed python autoconf automake pkg-config git inkscape optipng npm node" ;
+DEPS_RPM="sed python autoconf automake pkgconfig git inkscape optipng npm node" ;
+DEPS_PAC="sed python autoconf automake pkg-config git inkscape optipng npm node" ;
 WORK_DIR=$(pwd) ;
 SCRIPTS_DIR=${WORK_DIR}/internal/scripts ;
 GTK2_DIR=${WORK_DIR}/internal/gtk2 ;
@@ -132,7 +132,17 @@ check_dependencies()
 	if hash ${i} 2> /dev/null; then
 	    echo "ok" ;
 	else
-	    echo "failed." ;
+	    if [ "${i}" = "node" ]; then
+		if hash nodejs 2> /dev/null; then
+		    echo "failed, but nodejs is installed. You can \
+create a symbolic link from $(which nodejs) to /usr/bin/node to resolve \
+this issue." ;
+		else
+		    echo "failed. Nodejs is missing." ;
+		fi ;
+	    else
+		echo "failed." ;
+	    fi
 	    fail=1 ;
 	fi ;
     done ;
@@ -212,13 +222,9 @@ prepare_arc()
     # Prepare the node-sass environment.
     echo "Preparing node-sass..." ;
     cd common ;    
-    if npm i ; then
-	if npm i -g gulp ; then
-	    echo "Done." ;
-	else
-	    echo "Error: Node-sass preparation failed." ;
-	    exit 1 ;
-	fi ;
+    echo "Please give the root password to prepare node-sass." ;
+    if su -c "npm i && npm i -g gulp && chown $(who | cut -f1 -d" ") ${ARC_DIR} -R;"; then
+       echo "Done." ;
     else
 	echo "Error: Node-sass preparation failed." ;
 	exit 1 ;
@@ -624,6 +630,7 @@ install_variant()
     gulp ;
     ./autogen.sh ${ARC_OPTIONS} ;
 
+    echo "Please give the root password to install the theme." ;
     if [ "${hidpi}" != "hidpi" ]; then
 	su -c "rm -r ${THEME_PREFIX}/share/themes/Arc-${name}; rm -r ${THEME_PREFIX}/share/themes/Arc-${name}-Dark; rm -r ${THEME_PREFIX}/share/themes/Arc-${name}-Darker; make install" ;
     else
@@ -649,6 +656,7 @@ uninstall_variant()
     if ! [ $# -eq 0 ]; then
 	local name=${1} ;    
 	echo "Uninstalling Arc-${name}..." ;
+	echo "Please give the root password to uninstall the theme." ;
 	su -c "rm -r ${THEME_PREFIX}/share/themes/Arc-${name}; rm -r ${THEME_PREFIX}/share/themes/Arc-${name}-Dark; rm -r ${THEME_PREFIX}/share/themes/Arc-${name}-Darker" && echo "Done." ;
     fi ;
 }
