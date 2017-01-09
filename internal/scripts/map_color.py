@@ -5,6 +5,8 @@ import re
 import sys
 
 def main():
+    strresult = ['00', '00', '00']
+    
     if len(sys.argv) == 3:        
         color = sys.argv[1]
         base = sys.argv[2]        
@@ -45,9 +47,13 @@ def main():
         rgbresult[0] = int(round(rgbbase[0]))
         rgbresult[1] = int(round(rgbbase[1]))
         rgbresult[2] = int(round(rgbbase[2]))
-        print "%s%s%s" % (format(rgbresult[0], 'x'), format(rgbresult[1], 'x'), format(rgbresult[2], 'x')) 
+        strresult[0] = format(rgbresult[0], 'x')
+        strresult[1] = format(rgbresult[1], 'x')
+        strresult[2] = format(rgbresult[2], 'x')
+        print('{}{}{}'.format(strresult[0], strresult[1], strresult[2]))
     else:
-        print 0, 0, 0
+        print('{}{}{}'.format(strresult[0], strresult[1], strresult[2]))
 
 if __name__ == "__main__":
     main()
+
