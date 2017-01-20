@@ -99,10 +99,10 @@ print_help()
     echo '  -v, --gtk3-version=VER: Set the gtk3 versions. The supported versions are: 14,' ;
     echo '                          16, 18, 20, 22. E.g., -v="18 20 22". The default is to' ;
     echo '                          build the theme for all versions.' ;
-    echo '  -p, --dpi               Set a custom DPI value for the high DPI variants. The' ;
+    echo '  -p, --dpi=VAL           Set a custom DPI value for the high DPI variants. The' ;
     echo '                          default is 140.' ;
     echo '  -d, --disable-dark:     Disable all the dark variants.' ;
-    echo '  -o, --ORIGINAL:         Use the original assets of the Arc theme.' ;
+    echo '  -o, --original:         Use the original assets of the Arc theme.' ;
     echo '  -c, --clear:            Delete all the generated content.' ;
     echo '  -h, --help:             Print this help message.' ;
 }
