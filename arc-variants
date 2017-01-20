@@ -223,7 +223,7 @@ prepare_arc()
     echo "Preparing node-sass..." ;
     cd common ;    
     echo "Please give the root password to prepare node-sass." ;
-    if su -c "npm i && npm i -g gulp && chown $(who | cut -f1 -d" ") ${ARC_DIR} -R;"; then
+    if su -c "npm i && npm i -g gulp && chown $(who | cut -f1 -d" " | head -1) ${ARC_DIR} -R;"; then
        echo "Done." ;
     else
 	echo "Error: Node-sass preparation failed." ;

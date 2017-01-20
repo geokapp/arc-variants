@@ -82,6 +82,7 @@ To build the theme variants the following packages are required:
 * `pkg-config` or `pkgconfig` if you use Fedora
 * `libgtk-3-dev` for Debian based distros or `gtk3-devel` for RPM based distros
 * `git` 
+* `nodejs`
 * `npm` 
 * `optipng`
 * `inkscape`
@@ -109,23 +110,23 @@ Clone the git repository with:
 
 ### 2. Build and install a theme variant
 
-    ./arc_variants -i=VAR
+    ./arc-variants -i=VAR
 
 The VAR argument has the  form: `name[-hidpi][:colorhex]`. The `name` field is the name of the color variant. It can be either a build-in variant name, or a user-defined name. In the former case, the `colorhex` field is omitted. But, in the latter case it is mandatory. The `hidpi` argument informs the tool to build the high DPI version of the requested variant. For example: `-i=red-hidpi` informs the tool to install the high DPI version of the build-in red variant. Similarly, `-i=mycolor:7636a3` informs the tool to install the user defined color variant named `mycolor` and to create shades of #7636a3. The supported build-in variants are: blue, red, green, brown.
 
 By default, the tool produces elements for all GTK3 versions. You can use the `-v, --gtk3-versions` flag to inform the tool to build elements for the given GTK3 versions only. E.g.: 
 
-    ./arc_variants -i=red -v="20 22"
+    ./arc-variants -i=red -v="20 22"
 
 You can also inform the tool to skip the dark variants by using the `-d, --disable-dark` flag. E.g.:   
 
-    ./arc_variants -i=green-hidpi -v=22 -d
+    ./arc-variants -i=green-hidpi -v=22 -d
 
 ### 3. Uninstall a theme variant
 
 You can use the `-u, --uninstall` flag to uninstall a variant. E.g.:
 
-    ./arc_variants -u=red
+    ./arc-variants -u=red
 
 ### 4. Build and install a theme variant using a Docker container
 (Credits to @MoriTanosuke for providing the Dockerfile and the instructions). 
